@@ -3,20 +3,43 @@
 namespace App\Controllers;
 
 use App\Models\Patient;
+use App\Models\Appointment;
 
 class PatientController extends CoreController
 {
     /**
-     * URLPATH: /patients
+     * URLPATH: /patients OU /patients?id={id}&page={page}
      * METHOD: GET
      */
     public function listPatient()
     {
-        $patients = Patient::findAll();
+        $search = filter_input(INPUT_GET, 'search');
 
-        $this->render('patient/liste-patients', [
-            "patients" => $patients,
-        ]);
+        $page = filter_input(INPUT_GET, 'page');
+
+        if ($page == NULL) {
+            $currentPage = 1;
+        } else {
+            $currentPage = $page;
+        }
+
+        if ($search == NULL) {
+            $results = Patient::findAllWithPagination($currentPage);
+            $patients = $results['patients'];
+            $header = $results['header'];
+            $this->render('patient/liste-patients', [
+                "patients" => $patients,
+                "header" => $header,
+            ]);
+        } else {
+            $results = Patient::searchWithPagination($search, $currentPage);
+            $patients = $results['patients'];
+            $header = $results['header'];
+            $this->render('patient/liste-patients', [
+                "patients" => $patients,
+                "header" => $header,
+            ]);
+        }
     }
 
     /**
@@ -25,13 +48,15 @@ class PatientController extends CoreController
      */
     public function profilPatient()
     {
-        $patient = Patient::findById(htmlspecialchars($_GET['id']));
+        $patient = Patient::findById(filter_input(INPUT_GET, 'id'));
 
         if ($patient == FALSE) {
             header('Location: /404');
         } else {
+            $appointments = Appointment::findByIdPatients($patient->getId());
             $this->render("patient/profil-patient", [
-                "patient" => $patient
+                "patient" => $patient,
+                "appointments" => $appointments,
             ]);
         }
     }
@@ -44,11 +69,11 @@ class PatientController extends CoreController
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $form = new Patient;
-            $form->setLastname(htmlspecialchars($_POST['lastname']));
-            $form->setFirstname(htmlspecialchars($_POST['firstname']));
-            $form->setBirthdate(htmlspecialchars($_POST['birthdate']));
-            $form->setMail(htmlspecialchars($_POST['mail']));
-            $form->setPhone(htmlspecialchars($_POST['phone']));
+            $form->setLastname(filter_input(INPUT_POST, 'lastname'));
+            $form->setFirstname(filter_input(INPUT_POST, 'firstname'));
+            $form->setBirthdate(filter_input(INPUT_POST, 'birthdate'));
+            $form->setMail(filter_input(INPUT_POST, 'mail'));
+            $form->setPhone(filter_input(INPUT_POST, 'phone'));
             $form->create();
             header('Location: /patients');
         } else {
@@ -64,16 +89,35 @@ class PatientController extends CoreController
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $form = new Patient;
-            $form->setLastname(htmlspecialchars($_POST['lastname']));
-            $form->setFirstname(htmlspecialchars($_POST['firstname']));
-            $form->setBirthdate(htmlspecialchars($_POST['birthdate']));
-            $form->setMail(htmlspecialchars($_POST['mail']));
-            $form->setPhone(htmlspecialchars($_POST['phone']));
-            $form->setId(htmlspecialchars($_POST['id']));
+            $form->setLastname(filter_input(INPUT_POST, 'lastname'));
+            $form->setFirstname(filter_input(INPUT_POST, 'firstname'));
+            $form->setBirthdate(filter_input(INPUT_POST, 'birthdate'));
+            $form->setMail(filter_input(INPUT_POST, 'mail'));
+            $form->setPhone(filter_input(INPUT_POST, 'phone'));
+            $form->setId(filter_input(INPUT_POST, 'id'));
             $form->update();
             header('Location: /patients');
         } else {
             $this->render('patient/ajout-patient', []);
+        }
+    }
+
+    /**
+     * URLPATH: /patients/delete
+     * METHOD: POST
+     */
+    public function deletePatient()
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $form = new Patient;
+            $form->setId(filter_input(INPUT_POST, 'id'));
+            $form->delete();
+            header('Location: /patients');
+        } else {
+            $patients = Patient::findAll();
+            $this->render('patients/liste-patients', [
+                "patients" => $patients,
+            ]);
         }
     }
 }

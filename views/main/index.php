@@ -1,5 +1,6 @@
 <?php
 $title = "Accueil";
+$searchBar = FALSE;
 ?>
 
 <div class="container-fluid">

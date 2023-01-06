@@ -1,5 +1,6 @@
 <?php
 $title = "Ajout d'un patient";
+$searchBar = FALSE;
 ?>
 
 <div class="row">

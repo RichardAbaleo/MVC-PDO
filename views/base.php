@@ -13,7 +13,6 @@
 
     <nav class="navbar navbar-expand-sm bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand"><?= $title ?></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -36,6 +35,12 @@
                     </li>
                 </ul>
             </div>
+            <?php if ($searchBar == TRUE) : ?>
+                <form action="/patients" method="GET" class="d-flex">
+                    <input class="form-control me-2" name='search' type="search" placeholder="Nom / prénom">
+                    <button class="btn btn-outline-success" type="submit">Rechercher</button>
+                </form>
+            <?php endif ?>
         </div>
     </nav>
 

@@ -24,6 +24,30 @@ class Patient
         return $pdoStatement->fetchAll(\PDO::FETCH_CLASS, self::class);
     }
 
+    static public function findAllWithPagination($page)
+    {
+        $pdoDBConnexion = DB::getPdo();
+
+        $sql = "SELECT COUNT(*) AS numberOfPages FROM `patients`";
+
+        $numberOfPages = ceil((($pdoDBConnexion->query($sql)->fetch()['numberOfPages']) / 4));
+
+        $page = (($page * 4) - 4);
+
+        $pdoDBConnexion = DB::getPdo();
+
+        $sql = "SELECT `firstname`, `lastname`, `id` FROM `patients` ORDER BY `lastname` LIMIT {$page}, 4";
+
+        $pdoStatement = $pdoDBConnexion->query($sql);
+
+        $patients = $pdoStatement->fetchAll(\PDO::FETCH_CLASS, self::class);
+        $header['currentPage'] = ($page / 4) + 1;
+        $header['numberOfPages'] = $numberOfPages;
+        $results['patients'] = $patients;
+        $results['header'] = $header;
+        return $results;
+    }
+
     static public function findById(int $id)
     {
         $pdoDBConnexion = DB::getPdo();
@@ -37,6 +61,33 @@ class Patient
         $pdoStatement->setFetchMode(\PDO::FETCH_CLASS, self::class);
 
         return $pdoStatement->fetch();
+    }
+
+    static public function searchWithPagination($search, $page)
+    {
+        $pdoDBConnexionNumber = DB::getPdo();
+
+        $sql = "SELECT COUNT(*) AS numberOfPages FROM `patients` WHERE `firstname` LIKE '%{$search}%' OR `lastname` LIKE '%{$search}%'";
+
+        $numberOfPages = ceil((($pdoDBConnexionNumber->query($sql)->fetch()['numberOfPages']) / 4));
+
+        $page = (($page * 4) - 4);
+
+        $pdoDBConnexion = DB::getPdo();
+
+        $sql = "SELECT `firstname`, `lastname`, `id` FROM `patients` 
+        WHERE `firstname` LIKE '%{$search}%' OR `lastname` LIKE '%{$search}%'
+        ORDER BY `lastname` LIMIT {$page}, 4";
+
+        $pdoStatement = $pdoDBConnexion->query($sql);
+
+        $patients = $pdoStatement->fetchAll(\PDO::FETCH_CLASS, self::class);
+        $header['currentPage'] = ($page / 4) + 1;
+        $header['numberOfPages'] = $numberOfPages;
+        $header['search'] = $search;
+        $results['patients'] = $patients;
+        $results['header'] = $header;
+        return $results;
     }
 
     public function create()
@@ -76,6 +127,21 @@ class Patient
                 `phone` = {$this->getPhone()},
                 `mail` = '{$this->getMail()}' 
             WHERE `patients`.`id` = {$this->getId()};";
+        $pdoDBConnexion->query($sql);
+    }
+
+    public function delete()
+    {
+        $appointment = new Appointment;
+        $appointment->setIdPatients($this->getId());
+        $appointment->deleteByIdPatients();
+
+        $pdoDBConnexion = DB::getPdo();
+
+        $sql =
+            "DELETE FROM `patients`
+            WHERE `patients`.`id` = {$this->getId()}";
+
         $pdoDBConnexion->query($sql);
     }
 

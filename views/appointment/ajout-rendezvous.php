@@ -1,5 +1,6 @@
 <?php
 $title = "Ajout d'un rendez-vous";
+$searchBar = FALSE;
 ?>
 
 <div class="row mt-5">

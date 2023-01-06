@@ -37,6 +37,19 @@ class Appointment
         return $pdoStatement->fetch();
     }
 
+    static public function findByIdPatients(int $idPatients)
+    {
+        $pdoDBConnexion = DB::getPdo();
+
+        $sql = "SELECT * 
+         FROM `appointments` 
+         WHERE `idPatients` = " . $idPatients;
+
+        $pdoStatement = $pdoDBConnexion->query($sql);
+
+        return $pdoStatement->fetchAll(\PDO::FETCH_CLASS, self::class);
+    }
+
     public function create()
     {
         $pdoDBConnexion = DB::getPdo();
@@ -50,24 +63,34 @@ class Appointment
         $pdoDBConnexion->query($sql);
     }
 
-    static public function update($form)
+    public function update()
     {
         $pdoDBConnexion = DB::getPdo();
 
-        if ($form['phone'] != '') {
-            $form['phone'] = "'" . $form['phone'] . "'";
-        } else {
-            $form['phone'] = 'NULL';
-        };
+        $sql = "UPDATE `appointments` 
+            SET `dateHour` = '{$this->getDateHour()}',
+                `idPatients` = '{$this->getIdPatients()}'
+            WHERE `appointments`.`id` = {$this->getId()}";
 
-        $sql =
-            "UPDATE `patients` 
-            SET `lastname` = '{$form['lastname']}',
-                `firstname` = '{$form['firstname']}',
-                `birthdate` = '{$form['birthdate']}',
-                `phone` = {$form['phone']},
-                `mail` = '{$form['mail']}' 
-            WHERE `patients`.`id` = {$form['id']};";
+        $pdoDBConnexion->query($sql);
+    }
+
+    public function delete()
+    {
+        $pdoDBConnexion = DB::getPdo();
+
+        $sql = "DELETE FROM `appointments`
+            WHERE `appointments`.`id` = {$this->getId()}";
+
+        $pdoDBConnexion->query($sql);
+    }
+
+    public function deleteByIdPatients()
+    {
+        $pdoDBConnexion = DB::getPdo();
+
+        $sql = "DELETE FROM `appointments`
+            WHERE `appointments`.`idPatients` = {$this->getIdPatients()}";
 
         $pdoDBConnexion->query($sql);
     }

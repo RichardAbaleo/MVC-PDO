@@ -23,11 +23,15 @@ try {
             break;
         case "/patients/profil":
             $patientController = new PatientController();
-            $patientController->ProfilPatient();
+            $patientController->profilPatient();
             break;
         case "/patients/update":
             $patientController = new PatientController();
             $patientController->updatePatient();
+            break;
+        case "/patients/delete":
+            $patientController = new PatientController();
+            $patientController->deletePatient();
             break;
         case "/appointments":
             $appointmentController = new AppointmentController();
@@ -36,6 +40,18 @@ try {
         case "/appointments/create":
             $appointmentController = new AppointmentController();
             $appointmentController->createAppointment();
+            break;
+        case "/appointments/details":
+            $appointmentController = new AppointmentController();
+            $appointmentController->detailsAppointment();
+            break;
+        case "/appointments/update":
+            $appointmentController = new AppointmentController();
+            $appointmentController->updateAppointment();
+            break;
+        case "/appointments/delete":
+            $appointmentController = new AppointmentController();
+            $appointmentController->deleteAppointment();
             break;
         case "/404":
             $mainController = new MainController();
