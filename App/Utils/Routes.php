@@ -33,6 +33,10 @@ try {
             $patientController = new PatientController();
             $patientController->deletePatient();
             break;
+        case "/patient-appointment/create":
+            $patientController = new PatientController();
+            $patientController->createPatientWithAppointment();
+            break;
         case "/appointments":
             $appointmentController = new AppointmentController();
             $appointmentController->listAppointment();
@@ -53,6 +57,7 @@ try {
             $appointmentController = new AppointmentController();
             $appointmentController->deleteAppointment();
             break;
+
         case "/404":
             $mainController = new MainController();
             $mainController->notFound();

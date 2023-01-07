@@ -30,7 +30,18 @@ class Patient
 
         $sql = "SELECT COUNT(*) AS numberOfPages FROM `patients`";
 
-        $numberOfPages = ceil((($pdoDBConnexion->query($sql)->fetch()['numberOfPages']) / 4));
+        $result = $pdoDBConnexion->query($sql)->fetch()['numberOfPages'];
+
+        if ($result == 0) {
+            $header['currentPage'] = 1;
+            $header['numberOfPages'] = 0;
+            $header['search'] = NULL;
+            $results['patients'] = NULL;
+            $results['header'] = $header;
+            return $results;
+        }
+
+        $numberOfPages = ceil($result / 4);
 
         $page = (($page * 4) - 4);
 
@@ -43,6 +54,7 @@ class Patient
         $patients = $pdoStatement->fetchAll(\PDO::FETCH_CLASS, self::class);
         $header['currentPage'] = ($page / 4) + 1;
         $header['numberOfPages'] = $numberOfPages;
+        $header['search'] = NULL;
         $results['patients'] = $patients;
         $results['header'] = $header;
         return $results;
@@ -69,7 +81,18 @@ class Patient
 
         $sql = "SELECT COUNT(*) AS numberOfPages FROM `patients` WHERE `firstname` LIKE '%{$search}%' OR `lastname` LIKE '%{$search}%'";
 
-        $numberOfPages = ceil((($pdoDBConnexionNumber->query($sql)->fetch()['numberOfPages']) / 4));
+        $result = $pdoDBConnexionNumber->query($sql)->fetch()['numberOfPages'];
+
+        if ($result == 0) {
+            $header['currentPage'] = 1;
+            $header['numberOfPages'] = 0;
+            $header['search'] = $search;
+            $results['patients'] = NULL;
+            $results['header'] = $header;
+            return $results;
+        }
+
+        $numberOfPages = ceil($result / 4);
 
         $page = (($page * 4) - 4);
 
@@ -104,9 +127,18 @@ class Patient
             "INSERT INTO 
                 `patients` (`lastname`, `firstname`, `birthdate`, `mail`, `phone`) 
             VALUES 
-                ('{$this->getLastname()}', '{$this->getFirstname()}', '{$this->getBirthdate()}', '{$this->getMail()}', {$this->getPhone()})";
+                ('{$this->getLastname()}', '{$this->getFirstname()}', '{$this->getBirthdate()}', '{$this->getMail()}', {$this->getPhone()});
+            SELECT LAST_INSERT_ID();";
 
         $pdoDBConnexion->query($sql);
+
+        $pdoDBConnexionIdPatient = DB::getPdo();
+
+        $sql = "SELECT LAST_INSERT_ID();";
+
+        $patientId = $pdoDBConnexionIdPatient->query($sql)->fetch()['LAST_INSERT_ID()'];
+
+        $this->setId($patientId);
     }
 
     public function update()
@@ -127,7 +159,10 @@ class Patient
                 `phone` = {$this->getPhone()},
                 `mail` = '{$this->getMail()}' 
             WHERE `patients`.`id` = {$this->getId()};";
+
         $pdoDBConnexion->query($sql);
+
+        $pdoStatement = $pdoDBConnexion->query($sql);
     }
 
     public function delete()

@@ -33,6 +33,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/appointments/create">Ajouter rdv</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/patient-appointment/create">Ajouter patient avec rdv</a>
+                    </li>
                 </ul>
             </div>
             <?php if ($searchBar == TRUE) : ?>

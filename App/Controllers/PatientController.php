@@ -82,6 +82,33 @@ class PatientController extends CoreController
     }
 
     /**
+     * URLPATH: /patient-appointment/create
+     * METHOD: POST
+     */
+    public function createPatientWithAppointment()
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $formPatient = new Patient;
+            $formPatient->setLastname(filter_input(INPUT_POST, 'lastname'));
+            $formPatient->setFirstname(filter_input(INPUT_POST, 'firstname'));
+            $formPatient->setBirthdate(filter_input(INPUT_POST, 'birthdate'));
+            $formPatient->setMail(filter_input(INPUT_POST, 'mail'));
+            $formPatient->setPhone(filter_input(INPUT_POST, 'phone'));
+            $formPatient->create();
+            $formAppointment = new Appointment;
+            $formAppointment->setDateHour(filter_input(INPUT_POST, 'dateHour'));
+            $formAppointment->setIdPatients($formPatient->getId());
+            $formAppointment->create();
+            header('Location: /patients');
+        } else {
+            $patients = Patient::findAll();
+            $this->render('patient/ajout-patient-rendez-vous', [
+                "patients" => $patients,
+            ]);
+        }
+    }
+
+    /**
      * URLPATH: /patients/update
      * METHOD: POST
      */
