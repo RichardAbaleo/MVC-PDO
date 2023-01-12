@@ -9,19 +9,19 @@ $searchBar = FALSE;
         <form action="/patients/create" method="POST">
             <div class="my-3">
                 <label for="mail" class="form-label">Adresse email</label>
-                <input type="email" class="form-control" name="mail">
+                <input type="email" class="form-control" name="mail" required>
             </div>
             <div class="mb-3">
                 <label for="lastname" class="form-label">Nom</label>
-                <input type="text" class="form-control" name="lastname">
+                <input type="text" class="form-control" name="lastname" required>
             </div>
             <div class="mb-3">
                 <label for="firstname" class="form-label">Prénom</label>
-                <input type="text" class="form-control" name="firstname">
+                <input type="text" class="form-control" name="firstname" required>
             </div>
             <div class="mb-3">
                 <label for="birthdate" class="form-label">Date de naissance</label>
-                <input type="date" class="form-control" name="birthdate">
+                <input type="date" class="form-control" name="birthdate" required>
             </div>
             <div class="mb-5">
                 <label for="phone" class="form-label">Numéro de téléphone</label>
